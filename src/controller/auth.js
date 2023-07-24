@@ -5,6 +5,7 @@ const md5 = require('md5'); // Import the md5 library or module
 let register = (req, res) => {
     const { Token, Username, Email, Password } = req.body;
 
+    const hash_password = md5(Password);
     try {
         if (Token !== jwtmd5.secretmd5)
             return res.json({
@@ -12,35 +13,35 @@ let register = (req, res) => {
                 status: false,
                 message: 'FOBIDEN'
             });
-        const hash_password = md5(Password);
-        db.query(`select * from users where email = ? and username = ? and password = ?`, [Email, Username, hash_password], (error, result) => {
-            // console.log(result);
-            if (result.length) return res.json({
-                // results: true,
-                status: true,
-                message: 'please login'
-            });
+        console.log(hash_password);
+        db.query(`select * from users where email = ? and username = ? and password = ?`,
+            [Email, Username, hash_password], (error, result) => {
+                // console.log(result);
 
-        })
-
-
-        db.query(`select * from users where email = ? or username = ? `, [Email, Username], (error, result) => {
-            if (result.length) {
-                if (result[0].email === Email) {
-                    return res.json({
-                        status: 1,
-                        message: 'Email has existed'
+                if (result.length) return res.json({
+                    // results: true,
+                    status: true,
+                    message: 'please login'
+                });
+                else db.query(`select * from users where email = ? or username = ? `, [Email, Username], (error, result) => {
+                    if (result.length) {
+                        if (result[0].email === Email) {
+                            return res.json({
+                                status: 1,
+                                message: 'Email has existed'
+                            });
+                        } else if (result[0].username === Username)
+                            return res.json({
+                                status: 0,
+                                message: 'username has existed'
+                            });
+                    } return res.json({
+                        status: false,
+                        message: 'user has not existed'
                     });
-                } else if (result[0].username === Username)
-                    return res.json({
-                        status: 0,
-                        message: 'username has existed'
-                    });
-            } return res.json({
-                status: false,
-                message: 'user has not existed'
-            });
-        })
+                })
+
+            })
 
 
     } catch (error) {
