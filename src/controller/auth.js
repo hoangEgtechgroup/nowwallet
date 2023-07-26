@@ -2,6 +2,7 @@ const db = require('../config/connectDA');
 const jwtmd5 = require('../utils/jwtmd5');
 const md5 = require('md5'); // Import the md5 library or module
 
+//register check user has existed 
 let register = (req, res) => {
     const { Token, Username, Email, Password } = req.body;
 
@@ -27,12 +28,12 @@ let register = (req, res) => {
                     if (result.length) {
                         if (result[0].email === Email) {
                             return res.json({
-                                status: 1,
+                                status: 0,
                                 message: 'Email has existed'
                             });
                         } else if (result[0].username === Username)
                             return res.json({
-                                status: 0,
+                                status: 1,
                                 message: 'username has existed'
                             });
                     } return res.json({
@@ -53,7 +54,7 @@ let register = (req, res) => {
 
 
 
-
+//login user
 let login = (req, res) => {
     const { Token, Username, Password } = req.body;
     const hash_password = md5(Password)
