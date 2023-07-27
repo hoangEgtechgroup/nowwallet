@@ -1,6 +1,6 @@
 const express = require('express');
-const auth = require('../controller/auth');
-const transfer = require('../controller/transfer_money');
+const auth = require('../controller/auth.controller');
+const transfer = require('../controller/transfer_money.controller');
 
 const router = express.Router();
 const AUTH = (app) => {
